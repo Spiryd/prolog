@@ -1,0 +1,3 @@
+FROM swipl
+
+COPY . .
