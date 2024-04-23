@@ -1,16 +1,25 @@
 % Define small squares and their counts
 small_square(Count, FinalSSquare) :-
     % Define each small square and its count
-    ((SSquare1 = [1, 4, 5, 8], Count1 = 1) ; (SSquare1 = [], Count1 = 0)), 
-    ((union(SSquare1, [2, 5, 6, 9], SSquare2), Count2 is Count1 + 1) ; (SSquare2 = SSquare1, Count2 = Count1)), 
-    ((union(SSquare2, [3, 6, 7, 10], SSquare3), Count3 is Count2 + 1) ; (SSquare3 = SSquare2, Count3 = Count2)), 
-    ((union(SSquare3, [8, 11, 12, 15], SSquare4), Count4 is Count3 + 1) ; (SSquare4 = SSquare3, Count4 = Count3)), 
-    ((union(SSquare4, [9, 12, 13, 16], SSquare5), Count5 is Count4 + 1) ; (SSquare5 = SSquare4, Count5 = Count4)), 
-    ((union(SSquare5, [10, 13, 14, 17], SSquare6), Count6 is Count5 + 1) ; (SSquare6 = SSquare5, Count6 = Count5)), 
-    ((union(SSquare6, [15, 18, 19, 22], SSquare7), Count7 is Count6 + 1) ; (SSquare7 = SSquare6, Count7 = Count6)), 
-    ((union(SSquare7, [16, 19, 20, 23], SSquare8), Count8 is Count7 + 1) ; (SSquare8 = SSquare7, Count8 = Count7)), 
+    Square0 = [1, 4, 5, 8], 
+    Square1 = [2, 5, 6, 9]
+    Square2 = [3, 6, 7, 10]
+    Square3 = [8, 11, 12, 15],
+    Square4 = [9, 12, 13, 16],
+    Square5 = [10, 13, 14, 17], 
+    Square6 = [15, 18, 19, 22], 
+    Square7 = [16, 19, 20, 23], 
+    Square8 = [17, 20, 21, 24],
+    ((SSquare1 = Square0, Count1 = 1) ; (SSquare1 = [], Count1 = 0)), 
+    ((union(SSquare1, Square1, SSquare2), Count2 is Count1 + 1) ; (SSquare2 = SSquare1, Count2 = Count1)), 
+    ((union(SSquare2, Square2, SSquare3), Count3 is Count2 + 1) ; (SSquare3 = SSquare2, Count3 = Count2)), 
+    ((union(SSquare3, Square3, SSquare4), Count4 is Count3 + 1) ; (SSquare4 = SSquare3, Count4 = Count3)), 
+    ((union(SSquare4, Square4, SSquare5), Count5 is Count4 + 1) ; (SSquare5 = SSquare4, Count5 = Count4)), 
+    ((union(SSquare5, Square5, SSquare6), Count6 is Count5 + 1) ; (SSquare6 = SSquare5, Count6 = Count5)), 
+    ((union(SSquare6, Square6, SSquare7), Count7 is Count6 + 1) ; (SSquare7 = SSquare6, Count7 = Count6)), 
+    ((union(SSquare7, Square7, SSquare8), Count8 is Count7 + 1) ; (SSquare8 = SSquare7, Count8 = Count7)), 
     % Define the final small square and its count
-    ((union(SSquare8, [17, 20, 21, 24], FinalSSquare), Count is Count8 + 1) ; (FinalSSquare = SSquare8, Count = Count8)).
+    ((union(SSquare8, Square8, FinalSSquare), Count is Count8 + 1) ; (FinalSSquare = SSquare8, Count = Count8)).
 
 % Define medium squares and their counts
 medium_square(Initial, Count, FinalMSquare) :-
