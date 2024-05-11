@@ -1,74 +1,89 @@
-% Define the list of keywords
-keywords(['read', 'write', 'if', 'then', 'else', 'fi', 'while', 'do', 'od', 'and', 'or', 'mod']).
+keyWord(read).
+keyWord(write).
+keyWord(if).
+keyWord(then).
+keyWord(else).
+keyWord(fi).
+keyWord(while).
+keyWord(do).
+keyWord(od).
+keyWord(and).
+keyWord(or).
+keyWord(mod).
 
-% Define the list of separators
-separators([';', '+', '-', '*', '/', '(', ')', '<', '>', '=<', '>=', ':=', '=', '/=']).
+separator(';').
+separator('+').
+separator('-').
+separator('*').
+separator('/').
+separator('(').
+separator(')').
+separator('<').
+separator('>').
+separator('=<').
+separator('>=').
+separator(':=').
+separator('=').
+separator('/=').
 
-% Main predicate
-scanner(Stream, Tokens) :-
-    get_char(Stream, Char),
-    scanner(Char, Stream, Tokens).
+whiteChar(' ').
+whiteChar('\t').
+whiteChar('\n').
+whiteChar('\r').
 
-% Base case: end of stream
-scanner(end_of_file, _, []) :- !.
+variable(X) :- 
+    atom_chars(X, List), 	
+    \+ (member(X, List),
+    \+ char_type(X, upper)).
 
-% Case: whitespace
-scanner(Char, Stream, [Token|Tokens]) :-
-    char_type(Char, space), !,
-    get_char(Stream, NextChar),
-    scanner(NextChar, Stream, [Token|Tokens]).
+checkToken(L, end_of_file, L).
 
-% Case: letter
-scanner(Char, Stream, [Token|Tokens]) :-
-    char_type(Char, alpha), !,
-    read_word(Stream, Char, Word),
-    (   keywords(Keywords), member(Word, Keywords)
-    ->  Token = key(Word)
-    ;   Token = id(Word)
-    ),
-    get_char(Stream, NextChar),
-    scanner(NextChar, Stream, Tokens).
+checkToken(L, X, L2) :- 
+    atom_chars(X, Chars),
+    last(Chars, ';') -> 
+        (select(';', Chars, NL), !,
+        atom_chars(T, NL),
+        addToken(L, T, L3),
+        append(L3, [sep(';')], L2));
+        addToken(L, X, L2).
 
-% Case: digit
-scanner(Char, Stream, [Token|Tokens]) :-
-    char_type(Char, digit), !,
-    read_number(Stream, Char, Number),
-    Token = int(Number),
-    get_char(Stream, NextChar),
-    scanner(NextChar, Stream, Tokens).
+addToken(L, end_of_file, L).
 
-% Case: special character
-scanner(Char, Stream, [Token|Tokens]) :-
-    read_separator(Stream, Char, Separator),
-    Token = sep(Separator),
-    get_char(Stream, NextChar),
-    scanner(NextChar, Stream, Tokens).
+addToken(L, X, L2) :-  	
+    (keyWord(X) -> append(L, [key(X)], L2);
+    (separator(X) -> append(L, [sep(X)], L2);
+    (atom_number(X, N), integer(N), N >= 0) -> append(L, [int(N)], L2);
+    (variable(X) -> append(L, [id(X)], L2);
+    L2 = L))).
 
-% Helper predicate to read a word
-read_word(Stream, Char, Word) :-
-    get_char(Stream, NextChar),
-    (   char_type(NextChar, alpha)
-    ->  read_word(Stream, NextChar, RestWord),
-        atom_concat(Char, RestWord, Word)
-    ;   put_char(NextChar),
-        Word = Char
-    ).
+readNext(end_of_file, L, L) :- !.
 
-% Helper predicate to read a number
-read_number(Stream, Char, Number) :-
-    get_char(Stream, NextChar),
-    (   char_type(NextChar, digit)
-    ->  read_number(Stream, NextChar, RestNumber),
-        atom_concat(Char, RestNumber, Number)
-    ;   put_char(NextChar),
-        Number = Char
-    ).
+readNext(C1, X, X2) :- 	
+    whiteChar(C1), !,
+    get_char(C2),
+    readNext(C2, X, X2).
 
-% Helper predicate to read a separator
-read_separator(Stream, Char, Separator) :-
-    get_char(Stream, NextChar),
-    (   separators(Separators), atom_concat(Char, NextChar, PossibleSeparator), member(PossibleSeparator, Separators)
-    ->  Separator = PossibleSeparator
-    ;   put_char(NextChar),
-        Separator = Char
-    ).
+readNext(C1, L, X) :- 	
+    readWord(C1, C2, '', H),
+    checkToken(L, H, L2),
+    readNext(C2, L2, X).
+
+readWord(end_of_file, end_of_file, N, N) :- !.
+
+readWord(C, C, N, N) :- 
+    whiteChar(C), !.
+
+readWord(C1, C3, N1, N) :- 	
+    atom_concat(N1, C1, N2),
+    get_char(C2),
+    readWord(C2, C3, N2, N).
+
+tokenize(X) :- 	
+    get_char(C),
+    readNext(C, [], X).
+
+scanner(FD, Tokens) :- 	
+    current_input(Input),
+    set_input(FD),
+    tokenize(Tokens),
+    set_input(Input).
