@@ -2,8 +2,8 @@
 small_square(Count, FinalSSquare) :-
     % Define each small square and its count
     Square0 = [1, 4, 5, 8], 
-    Square1 = [2, 5, 6, 9]
-    Square2 = [3, 6, 7, 10]
+    Square1 = [2, 5, 6, 9],
+    Square2 = [3, 6, 7, 10],
     Square3 = [8, 11, 12, 15],
     Square4 = [9, 12, 13, 16],
     Square5 = [10, 13, 14, 17], 
