@@ -18,7 +18,6 @@ odcinek2(X):-
     8 #= popcount(Wartosc),
     7 #= msb(Wartosc) -lsb(Wartosc).
 
-% chyba o to chodzilo
 odcinek(X):-
     length(X,16),
     length(X1,8),
